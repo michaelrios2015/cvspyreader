@@ -1,6 +1,6 @@
 import csv
 
-with open('FNM_MF_202112.txt', newline='') as csvfile:
+with open('data/FNM_MF_202112.txt', newline='') as csvfile:
     # data = list(csv.reader(csvfile, delimiter='|'))
     reader = csv.DictReader(csvfile, delimiter='|')
 
@@ -15,7 +15,7 @@ with open('FNM_MF_202112.txt', newline='') as csvfile:
 
 headfields = ["Prefix", "Security Identifier", "CUSIP"]
 
-with open('head.cvs', 'w', newline='') as csvfile: 
+with open('data/head.cvs', 'w', newline='') as csvfile: 
     # creating a csv writer object 
     csvwriter = csv.writer(csvfile) 
         
@@ -29,7 +29,7 @@ with open('head.cvs', 'w', newline='') as csvfile:
 
 bodyFields = ["CUSIP", "Security Factor", "WA Issuance Interest Rate", "WA Loan Age", "WA Issuance Remaining Months to Maturity"]
 
-with open('body.cvs', 'w', newline='') as csvfile: 
+with open('data/body.cvs', 'w', newline='') as csvfile: 
     # creating a csv writer object 
     csvwriter = csv.writer(csvfile) 
         
