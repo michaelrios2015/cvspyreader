@@ -48,7 +48,7 @@ with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
 
             num_months = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
 
-            print(num_months)
+            # print(num_months)
 
             # print(issuedate)
             # print(int(issuedate[0:4]))
