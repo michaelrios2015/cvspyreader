@@ -1,0 +1,82 @@
+-- platinumbodies
+\COPY platinumbodies FROM 'C:\Users\micha\cvsPyReaders\data\output\platinumbodies.cvs' DELIMITER ','  CSV HEADER;
+
+-- platinums
+-- put into temp table 
+
+create temporary table platinumstemp (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
+\COPY platinumstemp FROM 'C:\Users\micha\cvsPyReaders\data\output\platinums.cvs' DELIMITER ',' CSV HEADER;
+
+-- Just checking that everything is equal works A OK :) 
+-- SELECT COUNT(*)
+-- FROM platinums
+-- INNER JOIN platinumstemp
+-- ON platinums.cusip = platinumstemp.cusip
+-- WHERE platinums.name = platinumstemp.name
+-- AND platinums.name = platinumstemp.name
+-- AND platinums.type = platinumstemp.type
+-- AND platinums.issuedate = platinumstemp.issuedate
+-- AND platinums.maturitydate = platinumstemp.maturitydate
+-- AND platinums.originalface = platinumstemp.originalface;
+
+-- SEEMS to work 
+
+INSERT INTO platinums (cusip, name, type, issuedate, maturitydate, originalface)
+SELECT cusip, name, type, issuedate, maturitydate, originalface
+FROM platinumstemp
+ON CONFLICT (cusip)
+DO NOTHING;
+
+DROP TABLE platinumstemp;
+
+
+-- fake platinums on the 6th business day 
+--  we just need cusip, interestrate and date
+-- but I am setting remainingbalance, factor, gwac, wam, and wala all to zero null would probably be fine but not sure but we can set them to zero 
+
+SELECT 
+    cusip,
+    interestrate
+INTO TEMP TABLE platinumbodiestemp
+FROM platinumbodies
+WHERE date = '2021-11-01';
+
+-- put them into platinum bodies
+INSERT INTO platinumbodies (cusip, interestrate, remainingbalance, factor, gwac, wam, wala, date )
+SELECT cusip, interestrate, 0, 0, 0, 0, 0, '2021-12-01' 
+FROM platinumbodiestemp;
+
+DROP TABLE platinumbodiestemp;
+
+-- Seems to work 
+
+-- pool bodies
+\COPY poolbodies FROM 'C:\Users\micha\cvsPyReaders\data\output\poolbodies.cvs' DELIMITER ','  CSV HEADER;
+
+create temporary table poolstemp (cusip varchar, name varchar , indicator varchar, type varchar, issuedate integer, maturitydate integer, originalface double precision, istbaelig boolean);
+
+\COPY poolstemp FROM 'C:\Users\micha\cvsPyReaders\data\output\pools.cvs' DELIMITER ',' CSV HEADER;
+
+-- Just checking that everything is equal works A OK :) 
+-- SELECT COUNT(*)
+-- FROM pools
+-- INNER JOIN poolstemp
+-- ON pools.cusip = poolstemp.cusip
+-- WHERE pools.name = poolstemp.name
+-- AND pools.indicator = poolstemp.indicator
+-- AND pools.type = poolstemp.type
+-- AND pools.issuedate = poolstemp.issuedate
+-- AND pools.maturitydate = poolstemp.maturitydate
+-- AND pools.originalface = poolstemp.originalface
+-- AND pools.istbaelig = poolstemp.istbaelig;
+
+-- SEEMS to work 
+
+INSERT INTO pools (cusip, name, indicator, type, issuedate, maturitydate, originalface, istbaelig)
+SELECT cusip, name, indicator, type, issuedate, maturitydate, originalface, istbaelig
+FROM poolstemp
+ON CONFLICT (cusip)
+DO NOTHING;
+
+DROP TABLE poolstemp;
+
