@@ -1,6 +1,5 @@
 import csv
 from datetime import datetime
-from dateutil import relativedelta
 
 # staring out with platinums because they seem pretty easy...
 # 
@@ -27,21 +26,11 @@ with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
             maturitydate = row[7]
             issuedate = row[5]
 
-            # print(maturitydate)
-            # end = datetime.strptime(maturitydate, '%Y%m%d').strftime('%m/%d/%Y')
-            # start = datetime.strptime(issuedate, '%Y%m%d').strftime('%m/%d/%Y')
+            # print(issuedate)
+            # print(int(issuedate[0:4]))
+            # print(int(issuedate[4:6]))
+            # print(int(issuedate[6:8]))
 
-            # print(end)
-            
-            # end =   datetime.strptime(end, "%d/%m/%Y")
-            # start = datetime.strptime(start, "%d/%m/%Y")
-            
-            # print(end)
-            # Get the interval between two dates
-            # diff = relativedelta.relativedelta(end, start)
-            # diff_in_months =  (end.year - start.year) * 12 + (end.month - start.month)
-            # print('Difference between dates in months:')
-            # print(diff_in_months)
 
             end_date = datetime(int(maturitydate[0:4]),int(maturitydate[4:6]),int(maturitydate[6:8]))
             start_date = datetime(int(issuedate[0:4]),int(issuedate[4:6]),int(issuedate[6:8]))
@@ -49,16 +38,6 @@ with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
             num_months = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
 
             # print(num_months)
-
-            # print(issuedate)
-            # print(int(issuedate[0:4]))
-            # print(int(issuedate[4:6]))
-            # print(int(issuedate[6:8]))
-    
-
-            # print((maturitydate[0:4]))
-            # print((maturitydate[4:6]))
-            # print((maturitydate[6:8]))
 
             istbaelig = False
 
@@ -76,15 +55,12 @@ with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
 # issuedate: csvMonthPools[i][5], maturitydate: csvMonthPools[i][7], originalface: csvMonthPools[i][8]
 
 
-
             # date need to be changed
             body.append( [row[1], row[6], row[9], row[10], row[17], row[18], row[19], '2021-12-01'] )
 
 # cusip: csvPoolMonthBodies[i][1], interestRate: csvPoolMonthBodies[i][6], remainingBalance: csvPoolMonthBodies[i][9], 
 # factor: csvPoolMonthBodies[i][10], GWAC: csvPoolMonthBodies[i][17], WAM: csvPoolMonthBodies[i][18], WALA: csvPoolMonthBodies[i][19], date})
 
-            # break
-# so seems to work would put in a temp table then switch to 
 
 headfields = [ "cusip", "name", "indicator", "type", "issuedate", "maturitydate", "originalface", "istbaelig" ]
 

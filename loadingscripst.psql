@@ -1,3 +1,9 @@
+
+---------------------------------------------------------------------------
+-- PLATINUMS
+-------------------------------------------------------------------------
+
+
 -- platinumbodies
 \COPY platinumbodies FROM 'C:\Users\micha\cvsPyReaders\data\output\platinumbodies.cvs' DELIMITER ','  CSV HEADER;
 
@@ -50,6 +56,11 @@ DROP TABLE platinumbodiestemp;
 
 -- Seems to work 
 
+
+---------------------------------------------------------------------------
+-- POOLS
+-------------------------------------------------------------------------
+
 -- pool bodies
 \COPY poolbodies FROM 'C:\Users\micha\cvsPyReaders\data\output\poolbodies.cvs' DELIMITER ','  CSV HEADER;
 
@@ -80,3 +91,68 @@ DO NOTHING;
 
 DROP TABLE poolstemp;
 
+
+---------------------------------------------------------------------------
+-- FEDS
+-------------------------------------------------------------------------
+
+
+\COPY fedholdings FROM 'C:\Users\micha\cvsPyReaders\data\output\fed.cvs' DELIMITER ','  CSV HEADER;
+
+create temporary table fedstemp (asofdate date, cusip varchar, currentfacevalue double precision, isaggregated boolean);
+
+\COPY fedstemp FROM 'C:\Users\micha\cvsPyReaders\data\output\fed.cvs' DELIMITER ',' CSV HEADER;
+
+-- Just checking that everything is equal works A OK :) 
+SELECT COUNT(*)
+FROM fedholdings
+INNER JOIN fedstemp
+ON fedholdings.cusip = fedstemp.cusip
+AND fedholdings.asofdate = fedstemp.asofdate        
+WHERE fedholdings.currentfacevalue = fedstemp.currentfacevalue
+AND fedholdings.isaggregated = fedstemp.isaggregated;
+
+-- SEEMS to work 
+
+DROP TABLE fedstemp;
+
+
+---------------------------------------------------------------------------
+-- CMOS
+-------------------------------------------------------------------------
+
+-- make a temp table 
+create temporary table cmostemp (cmo varchar, cusip varchar, faceincmo double precision, date date);
+
+-- read in data into temp table
+\COPY cmostemp FROM 'C:\Users\micha\cvsPyReaders\data\output\cmos.cvs' DELIMITER ','  CSV HEADER;
+
+-- transfer to real table, id will self increment which is nifty 
+INSERT INTO ofincmos(cmo, cusip, faceincmo, date)
+SELECT cmo, cusip, faceincmo, date
+FROM cmostemp;
+
+
+-- checking
+SELECT *
+FROM ofincmos
+INNER JOIN cmostemp
+ON ofincmos.cmo = cmostemp.cmo
+AND ofincmos.cusip = cmostemp.cusip        
+AND ofincmos.faceincmo = cmostemp.faceincmo
+AND ofincmos.date = cmostemp.date
+WHERE ofincmos.cmo = '2021-214-5';
+
+-- SEEMS to work but I am getting 20 more maybe those are the, think it is ok 
+-- we just have have 5 entries that are exactly the same so when we join we get 25 instead of 5 hence 20 more
+
+SELECT 
+    cmo, 
+    COUNT(*)
+FROM ofincmos
+WHERE date = '2021-12-01'
+GROUP BY cmo, cusip, faceincmo, date
+HAVING COUNT(*) > 1;
+
+
+DROP TABLE cmostemp;
