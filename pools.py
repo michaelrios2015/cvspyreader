@@ -12,7 +12,7 @@ from datetime import datetime
 # so this seems to work
 
 # file path needs to be changed
-with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
+with open('data\input\monthlySFPS_202112.txt', newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter='|'))
     # reader = csv.DictReader(csvfile, delimiter='|')
 
@@ -55,7 +55,7 @@ with open('data\input\monthlySFPS_202110.txt', newline='') as csvfile:
 # issuedate: csvMonthPools[i][5], maturitydate: csvMonthPools[i][7], originalface: csvMonthPools[i][8]
 
 
-            # date need to be changed
+            # DATE NEEDS TO BE CHANGED
             body.append( [row[1], row[6], row[9], row[10], row[17], row[18], row[19], '2021-12-01'] )
 
 # cusip: csvPoolMonthBodies[i][1], interestRate: csvPoolMonthBodies[i][6], remainingBalance: csvPoolMonthBodies[i][9], 
