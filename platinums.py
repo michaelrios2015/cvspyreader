@@ -1,22 +1,14 @@
 import csv
+import psycopg2
 
-# import psycopg2
+# connects to database
+conn = psycopg2.connect(
+    database="cmos_builder", user='postgres',
+    password='JerryPine', host='localhost', port='5432'
+)
 
-# conn = psycopg2.connect(
-#     database="cmos_builder", user='postgres',
-#     password='JerryPine', host='localhost', port='5432'
-# )
 
-# staring out with platinums because they seem pretty easy...
-#
-# platinumbodies and poolbodies whould be reall easy it's just about making a csv file that follows the tables for each
-#
-# platinums is pretty much teh same but I need to write some psql that will put the data into a temp table and do nothing
-# on a conflict or just update, which is also fine since the information will not have changed.. i wonder what happen to the
-# old ones I feel like I probably could just delete and reload the data each month.. no real reason though
-
-# so this seems to work
-
+# reads in ginnie files take what i need and orders it
 # file path needs to be changed
 with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter='|'))
@@ -33,16 +25,10 @@ with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
 
             # date need to be changed
             body.append([row[1], row[6], row[9], row[10], row[16], row[17],
-                        row[18], '', 'NULL', '', '2021-12-01', '', '', '', '', '', '', ''])
-
-# cusip: csvMonthPlatinums[i][1], name: csvMonthPlatinums[i][2], type: csvMonthPlatinums[i][4], issuedate: csvMonthPlatinums[i][5], maturitydate: csvMonthPlatinums[i][7], originalface: csvMonthPlatinums[i][8]})
-
-# cusip: csvPlatinumMonthBodies[i][1], interestrate: csvPlatinumMonthBodies[i][6], remainingbalance: csvPlatinumMonthBodies[i][9],
-# factor: csvPlatinumMonthBodies[i][10], gwac: csvPlatinumMonthBodies[i][16], wam: csvPlatinumMonthBodies[i][17], wala: csvPlatinumMonthBodies[i][18], indicator: null, istbaelig: null,  cpr: null, date
+                        row[18], '', '', '', '2021-12-01', '', '', '', '', '', '', ''])
 
 
-# so seems to work would put in a temp table then switch to
-
+# spits out cvs files
 headfields = ["cusip", "name", "type",
               "issuedate", "maturitydate", "originalface"]
 
@@ -73,37 +59,47 @@ with open('data/output/platinumbodies.cvs', 'w', newline='') as csvfile:
     csvwriter.writerows(body)
 
 
-# conn.autocommit = True
-# cursor = conn.cursor()
+# connecting to database
+# probably don't need to
+conn.autocommit = True
+cursor = conn.cursor()
 
-# f = open(r'data\output\platinumbodies.cvs', 'r')
-# cursor.copy_from(f, 'platinumbodies', sep=',')
-# f.close()
+# csv_file_name = 'data\output\platinumbodies.cvs'
+# sql = "COPY platinumbodies FROM STDIN DELIMITER ',' CSV HEADER"
+# cursor.copy_expert(sql, open(csv_file_name, "r"))
 
-# sql = '''
+sql = '''
 
-# \COPY platinumbodies FROM 'C:\\Users\\micha\\cvsPyReaders\\data\\output\\platinumbodies.cvs' DELIMITER ','  CSV HEADER;
+create temporary table platinumstemp (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
 
-# create temporary table platinumstemp (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
+'''
+cursor.execute(sql)
 
-# \COPY platinumstemp FROM 'C:\\Users\\micha\\cvsPyReaders\\data\\output\\platinums.cvs' DELIMITER ',' CSV HEADER;
-
-# INSERT INTO platinums (cusip, name, type, issuedate, maturitydate, originalface)
-# SELECT cusip, name, type, issuedate, maturitydate, originalface
-# FROM platinumstemp
-# ON CONFLICT (cusip)
-# DO NOTHING;
-
-# DROP TABLE platinumstemp;
+csv_file_name = 'data\output\platinums.cvs'
+sql = "COPY platinumstemp FROM STDIN DELIMITER ',' CSV HEADER"
+cursor.copy_expert(sql, open(csv_file_name, "r"))
 
 
-# '''
+sql = '''
 
-# cursor.execute(sql)
+create table fakeplatinums (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
+
+INSERT INTO fakeplatinums (cusip, name, type, issuedate, maturitydate, originalface)
+SELECT cusip, name, type, issuedate, maturitydate, originalface
+FROM platinumstemp
+ON CONFLICT (cusip)
+DO NOTHING;
+
+DROP TABLE platinumstemp;
+
+
+'''
+
+cursor.execute(sql)
 
 # records = cursor.fetchall()
 
 # print(records)
 
-# conn.commit()
-# conn.close()
+conn.commit()
+conn.close()
