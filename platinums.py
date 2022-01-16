@@ -1,17 +1,17 @@
 import csv
 
 # staring out with platinums because they seem pretty easy...
-# 
+#
 # platinumbodies and poolbodies whould be reall easy it's just about making a csv file that follows the tables for each
-# 
+#
 # platinums is pretty much teh same but I need to write some psql that will put the data into a temp table and do nothing
-# on a conflict or just update, which is also fine since the information will not have changed.. i wonder what happen to the 
+# on a conflict or just update, which is also fine since the information will not have changed.. i wonder what happen to the
 # old ones I feel like I probably could just delete and reload the data each month.. no real reason though
 
 # so this seems to work
 
 # file path needs to be changed
-with open('data\platmonPPS_202110.txt', newline='') as csvfile:
+with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter='|'))
     # reader = csv.DictReader(csvfile, delimiter='|')
 
@@ -25,46 +25,42 @@ with open('data\platmonPPS_202110.txt', newline='') as csvfile:
             head.append([row[1], row[2], row[4], row[5], row[7], row[8]])
 
             # date need to be changed
-            body.append( [row[1], row[6], row[9], row[10], row[16], row[17], row[18], '', '', '', '2021-12-01', '', '', '', '', '', '', ''])
+            body.append([row[1], row[6], row[9], row[10], row[16], row[17],
+                        row[18], '', '', '', '2021-12-01', '', '', '', '', '', '', ''])
 
 # cusip: csvMonthPlatinums[i][1], name: csvMonthPlatinums[i][2], type: csvMonthPlatinums[i][4], issuedate: csvMonthPlatinums[i][5], maturitydate: csvMonthPlatinums[i][7], originalface: csvMonthPlatinums[i][8]})
 
-# cusip: csvPlatinumMonthBodies[i][1], interestrate: csvPlatinumMonthBodies[i][6], remainingbalance: csvPlatinumMonthBodies[i][9], 
+# cusip: csvPlatinumMonthBodies[i][1], interestrate: csvPlatinumMonthBodies[i][6], remainingbalance: csvPlatinumMonthBodies[i][9],
 # factor: csvPlatinumMonthBodies[i][10], gwac: csvPlatinumMonthBodies[i][16], wam: csvPlatinumMonthBodies[i][17], wala: csvPlatinumMonthBodies[i][18], indicator: null, istbaelig: null,  cpr: null, date
 
 
-# so seems to work would put in a temp table then switch to 
+# so seems to work would put in a temp table then switch to
 
-headfields = [ "cusip", "name", "type", "issuedate", "maturitydate", "originalface"]
+headfields = ["cusip", "name", "type",
+              "issuedate", "maturitydate", "originalface"]
 
-with open('data/platinums.cvs', 'w', newline='') as csvfile: 
-    # creating a csv writer object 
-    csvwriter = csv.writer(csvfile) 
-        
-    # writing the fields 
-    csvwriter.writerow(headfields) 
-        
-    # writing the data rows 
+with open('data/output/platinums.cvs', 'w', newline='') as csvfile:
+    # creating a csv writer object
+    csvwriter = csv.writer(csvfile)
+
+    # writing the fields
+    csvwriter.writerow(headfields)
+
+    # writing the data rows
     csvwriter.writerows(head)
 
 
 # print(body)
 
-bodyFields = ["cusip", "interestrate", "remainingbalance", "factor" ,"gwac", "wam", "wala", "indicator", "istbaelig", "cpr", "date", "cdr", "predictedcpr", "predictedcprnext", "predictedcdr", "predictedcdrnext", "cprnext", "cdrnext"]
+bodyFields = ["cusip", "interestrate", "remainingbalance", "factor", "gwac", "wam", "wala", "indicator", "istbaelig",
+              "cpr", "date", "cdr", "predictedcpr", "predictedcprnext", "predictedcdr", "predictedcdrnext", "cprnext", "cdrnext"]
 
-with open('data/platinumbodies.cvs', 'w', newline='') as csvfile: 
-    # creating a csv writer object 
-    csvwriter = csv.writer(csvfile) 
-        
-    # writing the fields 
-    csvwriter.writerow(bodyFields) 
-        
-    # writing the data rows 
+with open('data/output/platinumbodies.cvs', 'w', newline='') as csvfile:
+    # creating a csv writer object
+    csvwriter = csv.writer(csvfile)
+
+    # writing the fields
+    csvwriter.writerow(bodyFields)
+
+    # writing the data rows
     csvwriter.writerows(body)
-
-
-
-
-
-
-

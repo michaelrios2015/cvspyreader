@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import sys
 
 # staring out with platinums because they seem pretty easy...
 # 
@@ -9,10 +10,15 @@ from datetime import datetime
 # on a conflict or just update, which is also fine since the information will not have changed.. i wonder what happen to the 
 # old ones I feel like I probably could just delete and reload the data each month.. no real reason though
 
+
+# print system arguments
+print(sys.argv)
+
+
 # so this seems to work
 
 # file path needs to be changed
-with open('data\input\monthlySFPS_202112.txt', newline='') as csvfile:
+with open('data/input/monthlySFPS_202112.txt', newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter='|'))
     # reader = csv.DictReader(csvfile, delimiter='|')
 

@@ -1,6 +1,6 @@
 import csv
 
-with open('data/input/fedHoldings2022-01-05.csv', newline='') as csvfile:
+with open('data/input/fedHoldings2022-01-12.csv', newline='') as csvfile:
     # data = list(csv.reader(csvfile, delimiter='|'))
     reader = csv.DictReader(csvfile, delimiter=',')
 
@@ -13,50 +13,31 @@ with open('data/input/fedHoldings2022-01-05.csv', newline='') as csvfile:
     for row in reader:
         isaggregated = False
         # print(row)
-        
-        if row["is Aggregated"] == 'Y':
-            isaggregated = True        
-        output.append([row["As Of Date"], eval(row["CUSIP"]), row["Current Face Value"], isaggregated])
-        # print(output)
-        # break    
 
+        if row["is Aggregated"] == 'Y':
+            isaggregated = True
+        output.append([row["As Of Date"], eval(row["CUSIP"]),
+                      row["Current Face Value"], isaggregated])
+        # print(output)
+        # break
 
 
 fields = ["asofdate", "cusip", "currentfacevalue", "isaggregated"]
 
-with open('data/output/fed.cvs', 'w', newline='') as csvfile: 
-    # creating a csv writer object 
-    csvwriter = csv.writer(csvfile) 
-        
-    # # writing the fields 
-    csvwriter.writerow(fields) 
-        
-    # writing the data rows 
+with open('data/output/fed.cvs', 'w', newline='') as csvfile:
+    # creating a csv writer object
+    csvwriter = csv.writer(csvfile)
+
+    # # writing the fields
+    csvwriter.writerow(fields)
+
+    # writing the data rows
     csvwriter.writerows(output)
 
 
-
-# bodyFields = ["CUSIP", "Security Factor", "WA Issuance Interest Rate", "WA Loan Age", "WA Issuance Remaining Months to Maturity"]
-
-# with open('data/body.cvs', 'w', newline='') as csvfile: 
-#     # creating a csv writer object 
-#     csvwriter = csv.writer(csvfile) 
-        
-#     # writing the fields 
-#     csvwriter.writerow(bodyFields) 
-        
-#     # writing the data rows 
-#     csvwriter.writerows(body)
-
-
-
-
-
-
-
-# 
-# looks like we will need this hopefully it is orginal face 
+#
+# looks like we will need this hopefully it is orginal face
 # Issuance Investor Security UPB': '26260359.00'
 
-# november 2023 I think 
+# november 2023 I think
 # 'Maturity Date': '112023',

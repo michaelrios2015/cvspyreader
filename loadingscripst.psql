@@ -156,3 +156,95 @@ HAVING COUNT(*) > 1;
 
 
 DROP TABLE cmostemp;
+
+
+---------------------------------------------------------------------------
+-- PLATCOLLS
+-------------------------------------------------------------------------
+
+-- make a temp table 
+create temporary table platcollstemp (cusip varchar, poolname varchar, indicator varchar, faceinplatinum double precision, active varchar, date date);
+
+
+
+-- read in data into temp table
+\COPY platcollstemp FROM 'C:\Users\micha\cvsPyReaders\data\output\platcolls.cvs' DELIMITER ','  CSV HEADER;
+
+
+-- so this would work if they were all new kind of
+
+
+-- it's brand new so we can insert it but we need to make sure it was not born and died on the same month
+-- I don't know if this can happen but needs to be checked for, I could just check after they are inserted.. if there are any that are terminated and have no 
+-- termination date just set the current date to terminated.. could work
+
+INSERT INTO platcolls(cusip, poolname, indicator, faceinplatinum, active, born)
+SELECT cusip, poolname, indicator, faceinplatinum, active, date
+FROM platcollstemp
+ON CONFLICT DO NOTHING;
+
+-- so above should insert any new ones in 
+
+-- Then I could write something else to make sure none where treminated without a termination date 
+
+SELECT *
+FROM platcolls
+WHERE active = 'T'
+AND terminated IS NULL;
+
+-- That would at least show them to me 
+-- then there would be more magic to update them 
+
+
+-- it's already in there and it's already terminated we should just be able to ignore it.  I don't think they can come back from the dead
+
+-- it's already in there active and still actice ignore nothing changed
+
+-- The above two scenarios nothing needs to be done for 
+
+
+-- it's already in there and has changed from active to terminated, need to change the actiive  column and the the termonated date..
+
+-- could probably do a lot of this with temp tables 
+
+SELECT * 
+FROM platcolls
+INNER JOIN platcollstemp
+ON platcolls.cusip = platcollstemp.cusip
+AND platcolls.poolname = platcollstemp.poolname
+AND platcolls.indicator = platcollstemp.indicator
+WHERE platcolls.active = 'A'
+AND platcollstemp.actice = 'T'
+
+-- So this should get me the ones that need to be changed.. can probably put them in a temp table and update them from there  
+
+DROP table platcollstemp
+
+
+------------------
+
+-- testing
+
+create temporary table fakeplatcolls (cusip varchar, poolname varchar, indicator varchar, faceinplatinum double precision, active varchar, born date, terminated date);
+
+INSERT INTO fakeplatcolls(cusip, poolname, indicator, faceinplatinum, active, born)
+SELECT cusip, poolname, indicator, faceinplatinum, active, date
+FROM platcollstemp
+ON CONFLICT DO NOTHING;
+
+SELECT *
+FROM fakeplatcolls
+WHERE active = 'T'
+-- AND terminated IS NULL
+LIMIT 10;
+
+UPDATE fakeplatcolls
+SET terminated = born
+WHERE active = 'T'
+AND terminated IS NULL;
+
+-- So the above seems to work just fine 
+
+--  need to load in another month before i can check for updating from actice to terminated not sure 
+-- if I want to do it now 
+
