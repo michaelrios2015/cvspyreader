@@ -192,6 +192,14 @@ FROM platcolls
 WHERE active = 'T'
 AND terminated IS NULL;
 
+-- this should only be necessay the very first time i add platcolls and the terminatin date is not correct i just don't know 
+-- it so that is what i use
+UPDATE platcolls
+SET terminated = born
+WHERE active = 'T'
+AND terminated IS NULL;
+
+
 -- That would at least show them to me 
 -- then there would be more magic to update them 
 
@@ -207,25 +215,30 @@ AND terminated IS NULL;
 
 -- could probably do a lot of this with temp tables 
 
-SELECT * 
-FROM platcolls
-INNER JOIN platcollstemp
-ON platcolls.cusip = platcollstemp.cusip
+-- seeems to work
+
+UPDATE platcolls
+SET terminated = date,
+    active = 'T'
+FROM platcollstemp
+WHERE platcolls.cusip = platcollstemp.cusip
 AND platcolls.poolname = platcollstemp.poolname
 AND platcolls.indicator = platcollstemp.indicator
-WHERE platcolls.active = 'A'
-AND platcollstemp.actice = 'T'
+AND platcolls.active = 'A'
+AND platcollstemp.active = 'T';
+
 
 -- So this should get me the ones that need to be changed.. can probably put them in a temp table and update them from there  
 
 DROP table platcollstemp
 
-
+truncate platcollstemp;
 ------------------
 
 -- testing
 
-create temporary table fakeplatcolls (cusip varchar, poolname varchar, indicator varchar, faceinplatinum double precision, active varchar, born date, terminated date);
+create temporary table fakeplatcolls (cusip varchar, poolname varchar, indicator varchar, 
+                        faceinplatinum double precision, active varchar, born date, terminated date, PRIMARY KEY(cusip, poolname, indicator));
 
 INSERT INTO fakeplatcolls(cusip, poolname, indicator, faceinplatinum, active, born)
 SELECT cusip, poolname, indicator, faceinplatinum, active, date
@@ -235,16 +248,64 @@ ON CONFLICT DO NOTHING;
 SELECT *
 FROM fakeplatcolls
 WHERE active = 'T'
--- AND terminated IS NULL
+AND terminated IS NULL
 LIMIT 10;
 
+-- so this seems to work 
 UPDATE fakeplatcolls
 SET terminated = born
 WHERE active = 'T'
 AND terminated IS NULL;
+
+
+UPDATE fakeplatcolls
+SET terminated = date,
+    active = 'T'
+FROM platcollstemp
+WHERE fakeplatcolls.cusip = platcollstemp.cusip
+AND fakeplatcolls.poolname = platcollstemp.poolname
+AND fakeplatcolls.indicator = platcollstemp.indicator
+AND fakeplatcolls.active = 'A'
+AND platcollstemp.active = 'T';
+
+
+
+SELECT count(*) 
+FROM fakeplatcolls
+INNER JOIN platcollstemp
+ON fakeplatcolls.cusip = platcollstemp.cusip
+AND fakeplatcolls.poolname = platcollstemp.poolname
+AND fakeplatcolls.indicator = platcollstemp.indicator
+WHERE fakeplatcolls.active = 'A'
+AND platcollstemp.active = 'T'
+-- LIMIT 4;
 
 -- So the above seems to work just fine 
 
 --  need to load in another month before i can check for updating from actice to terminated not sure 
 -- if I want to do it now 
 
+-- seems to work 
+
+SELECT * 
+FROM fakeplatcolls
+INNER JOIN platcolls
+ON fakeplatcolls.cusip = platcolls.cusip
+AND fakeplatcolls.poolname = platcolls.poolname
+AND fakeplatcolls.indicator = platcolls.indicator
+WHERE fakeplatcolls.active = 'T'
+AND platcolls.active = 'T'
+AND fakeplatcolls.terminated = '2021-12-01'
+AND platcolls.terminated = '2021-12-01'
+LIMIT 5;
+
+
+
+SELECT * 
+FROM platcolls
+INNER JOIN platcollstemp
+ON platcolls.cusip = platcollstemp.cusip
+AND platcolls.poolname = platcollstemp.poolname
+AND platcolls.indicator = platcollstemp.indicator
+WHERE platcolls.active = 'A'
+AND platcollstemp.actice = 'T'

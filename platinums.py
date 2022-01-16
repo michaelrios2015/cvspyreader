@@ -1,5 +1,12 @@
 import csv
 
+# import psycopg2
+
+# conn = psycopg2.connect(
+#     database="cmos_builder", user='postgres',
+#     password='JerryPine', host='localhost', port='5432'
+# )
+
 # staring out with platinums because they seem pretty easy...
 #
 # platinumbodies and poolbodies whould be reall easy it's just about making a csv file that follows the tables for each
@@ -26,7 +33,7 @@ with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
 
             # date need to be changed
             body.append([row[1], row[6], row[9], row[10], row[16], row[17],
-                        row[18], '', '', '', '2021-12-01', '', '', '', '', '', '', ''])
+                        row[18], '', 'NULL', '', '2021-12-01', '', '', '', '', '', '', ''])
 
 # cusip: csvMonthPlatinums[i][1], name: csvMonthPlatinums[i][2], type: csvMonthPlatinums[i][4], issuedate: csvMonthPlatinums[i][5], maturitydate: csvMonthPlatinums[i][7], originalface: csvMonthPlatinums[i][8]})
 
@@ -64,3 +71,39 @@ with open('data/output/platinumbodies.cvs', 'w', newline='') as csvfile:
 
     # writing the data rows
     csvwriter.writerows(body)
+
+
+# conn.autocommit = True
+# cursor = conn.cursor()
+
+# f = open(r'data\output\platinumbodies.cvs', 'r')
+# cursor.copy_from(f, 'platinumbodies', sep=',')
+# f.close()
+
+# sql = '''
+
+# \COPY platinumbodies FROM 'C:\\Users\\micha\\cvsPyReaders\\data\\output\\platinumbodies.cvs' DELIMITER ','  CSV HEADER;
+
+# create temporary table platinumstemp (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
+
+# \COPY platinumstemp FROM 'C:\\Users\\micha\\cvsPyReaders\\data\\output\\platinums.cvs' DELIMITER ',' CSV HEADER;
+
+# INSERT INTO platinums (cusip, name, type, issuedate, maturitydate, originalface)
+# SELECT cusip, name, type, issuedate, maturitydate, originalface
+# FROM platinumstemp
+# ON CONFLICT (cusip)
+# DO NOTHING;
+
+# DROP TABLE platinumstemp;
+
+
+# '''
+
+# cursor.execute(sql)
+
+# records = cursor.fetchall()
+
+# print(records)
+
+# conn.commit()
+# conn.close()
