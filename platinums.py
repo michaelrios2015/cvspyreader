@@ -64,9 +64,9 @@ with open('data/output/platinumbodies.cvs', 'w', newline='') as csvfile:
 conn.autocommit = True
 cursor = conn.cursor()
 
-# csv_file_name = 'data\output\platinumbodies.cvs'
-# sql = "COPY platinumbodies FROM STDIN DELIMITER ',' CSV HEADER"
-# cursor.copy_expert(sql, open(csv_file_name, "r"))
+csv_file_name = 'data\output\platinumbodies.cvs'
+sql = "COPY platinumbodies FROM STDIN DELIMITER ',' CSV HEADER"
+cursor.copy_expert(sql, open(csv_file_name, "r"))
 
 sql = '''
 
@@ -75,6 +75,7 @@ create temporary table platinumstemp (cusip varchar, name varchar , type varchar
 '''
 cursor.execute(sql)
 
+# maybe there is an easier way to do this but I don't know it
 csv_file_name = 'data\output\platinums.cvs'
 sql = "COPY platinumstemp FROM STDIN DELIMITER ',' CSV HEADER"
 cursor.copy_expert(sql, open(csv_file_name, "r"))
@@ -82,9 +83,7 @@ cursor.copy_expert(sql, open(csv_file_name, "r"))
 
 sql = '''
 
-create table fakeplatinums (cusip varchar, name varchar , type varchar, issuedate integer, maturitydate integer, originalface double precision);
-
-INSERT INTO fakeplatinums (cusip, name, type, issuedate, maturitydate, originalface)
+INSERT INTO platinums (cusip, name, type, issuedate, maturitydate, originalface)
 SELECT cusip, name, type, issuedate, maturitydate, originalface
 FROM platinumstemp
 ON CONFLICT (cusip)
@@ -103,3 +102,6 @@ cursor.execute(sql)
 
 conn.commit()
 conn.close()
+
+
+# this seems to work not sure if i really need to make the cvs file... but well i know how to do it this way so
