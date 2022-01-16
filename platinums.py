@@ -17,7 +17,7 @@ with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
     head = []
     body = []
 
-    i = 0
+    # i = 0
 
     for row in data:
         if row[0] == 'PS':
