@@ -7,10 +7,13 @@ conn = psycopg2.connect(
     password='JerryPine', host='localhost', port='5432'
 )
 
+# change this monthly
+data_path = 'data\input\platmonPPS_202112.txt'
+
+date = data_path[-10:-6] + "-" + data_path[-6:-4] + "-01"
 
 # reads in ginnie files take what i need and orders it
-# file path needs to be changed
-with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
+with open(data_path, newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter='|'))
     # reader = csv.DictReader(csvfile, delimiter='|')
 
@@ -23,9 +26,8 @@ with open('data\input\platmonPPS_202112.txt', newline='') as csvfile:
         if row[0] == 'PS':
             head.append([row[1], row[2], row[4], row[5], row[7], row[8]])
 
-            # date need to be changed
             body.append([row[1], row[6], row[9], row[10], row[16], row[17],
-                        row[18], '', '', '', '2021-12-01', '', '', '', '', '', '', ''])
+                        row[18], '', '', '', date, '', '', '', '', '', '', ''])
 
 
 # spits out cvs files
@@ -82,7 +84,6 @@ cursor.copy_expert(sql, open(csv_file_name, "r"))
 
 
 sql = '''
-
 INSERT INTO platinums (cusip, name, type, issuedate, maturitydate, originalface)
 SELECT cusip, name, type, issuedate, maturitydate, originalface
 FROM platinumstemp
@@ -90,15 +91,10 @@ ON CONFLICT (cusip)
 DO NOTHING;
 
 DROP TABLE platinumstemp;
-
-
 '''
 
 cursor.execute(sql)
 
-# records = cursor.fetchall()
-
-# print(records)
 
 conn.commit()
 conn.close()
