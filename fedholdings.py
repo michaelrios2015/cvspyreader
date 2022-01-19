@@ -1,26 +1,27 @@
 import csv
+import psycopg2
 
-with open('data/input/fedHoldings2022-01-12.csv', newline='') as csvfile:
-    # data = list(csv.reader(csvfile, delimiter='|'))
+# connects to database
+conn = psycopg2.connect(
+    database="cmos_builder", user='postgres',
+    password='JerryPine', host='localhost', port='5432'
+)
+
+# change this monthly
+data_path = 'data/input/fedHoldings2022-01-12.csv'
+
+with open(data_path, newline='') as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',')
 
     output = []
 
-    # for row in reader:
-    #     head.append([row["Prefix"], row["Security Identifier"], row["CUSIP"]])
-    #     body.append([row["CUSIP"], row["Security Factor"], row["WA Issuance Interest Rate"], row["WA Loan Age"], row["WA Issuance Remaining Months to Maturity"]])
-
     for row in reader:
         isaggregated = False
-        # print(row)
 
         if row["is Aggregated"] == 'Y':
             isaggregated = True
         output.append([row["As Of Date"], eval(row["CUSIP"]),
                       row["Current Face Value"], isaggregated])
-        # print(output)
-        # break
-
 
 fields = ["asofdate", "cusip", "currentfacevalue", "isaggregated"]
 
@@ -33,6 +34,20 @@ with open('data/output/fed.cvs', 'w', newline='') as csvfile:
 
     # writing the data rows
     csvwriter.writerows(output)
+
+conn.autocommit = True
+cursor = conn.cursor()
+
+csv_file_name = 'data/output/fed.cvs'
+sql = "COPY fedholdings FROM STDIN DELIMITER ',' CSV HEADER"
+cursor.copy_expert(sql, open(csv_file_name, "r"))
+
+
+conn.commit()
+conn.close()
+
+
+# \COPY fedholdings FROM 'C:\Users\micha\cvsPyReaders\data\output\fed.cvs' DELIMITER ','  CSV HEADER;
 
 
 #
