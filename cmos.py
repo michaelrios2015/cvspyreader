@@ -1,17 +1,22 @@
 import csv
+import psycopg2
 
-# staring out with platinums because they seem pretty easy...
-#
-# platinumbodies and poolbodies whould be reall easy it's just about making a csv file that follows the tables for each
-#
-# platinums is pretty much teh same but I need to write some psql that will put the data into a temp table and do nothing
-# on a conflict or just update, which is also fine since the information will not have changed.. i wonder what happen to the
-# old ones I feel like I probably could just delete and reload the data each month.. no real reason though
+# connects to database
+conn = psycopg2.connect(
+    database="cmos_builder", user='postgres',
+    password='JerryPine', host='localhost', port='5432'
+)
+
 
 # so this seems to work
+data_path = 'data\input\CMOS_2021-12-01.csv'
+
+date = data_path[-14:-4]
+
+# print(date)
 
 # file path needs to be changed
-with open('data\input\CMOS_2021_12.csv', newline='') as csvfile:
+with open(data_path, newline='') as csvfile:
     data = list(csv.reader(csvfile, delimiter=','))
     # reader = csv.DictReader(csvfile, delimiter='|')
 
@@ -23,7 +28,7 @@ with open('data\input\CMOS_2021_12.csv', newline='') as csvfile:
         # print(row[4][5:] + '-' + row[3][1:])
         # print(row[3][1:])
         # print(row)
-        input.append([cmo, row[0], row[2], '2021-12-01'])
+        input.append([cmo, row[0], row[2], date])
         # break
 
 
@@ -39,3 +44,35 @@ with open('data/output/cmos.cvs', 'w', newline='') as csvfile:
 
     # writing the data rows
     csvwriter.writerows(input)
+
+
+# connecting to database
+# probably don't need to
+conn.autocommit = True
+cursor = conn.cursor()
+
+# create temp table
+sql = '''
+create temporary table cmostemp (cmo varchar, cusip varchar, faceincmo double precision, date date);
+'''
+cursor.execute(sql)
+
+# read in cvs into temp table
+csv_file_name = 'data\output\cmos.cvs'
+sql = "COPY cmostemp FROM STDIN DELIMITER ',' CSV HEADER"
+cursor.copy_expert(sql, open(csv_file_name, "r"))
+
+# transfer to actaul table and drop temp table
+sql = '''
+INSERT INTO ofincmos(cmo, cusip, faceincmo, date)
+SELECT cmo, cusip, faceincmo, date
+FROM cmostemp;
+ 
+DROP TABLE cmostemp;
+'''
+
+cursor.execute(sql)
+
+
+conn.commit()
+conn.close()
