@@ -7,8 +7,8 @@ conn = psycopg2.connect(
     password='JerryPine', host='localhost', port='5432'
 )
 
-# change this monthly
-data_path = 'data/input/fedHoldings2022-01-12.csv'
+# change this weekly
+data_path = 'data/input/fedHoldings2022-01-26.csv'
 
 with open(data_path, newline='') as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',')
