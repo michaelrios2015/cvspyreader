@@ -9,7 +9,7 @@ conn = psycopg2.connect(
 )
 
 # change this monthly
-data_path = 'data/input/monthlySFPS_202112.txt'
+data_path = 'data/input/monthlySFPS_202201.txt'
 
 date = data_path[-10:-6] + "-" + data_path[-6:-4] + "-01"
 
