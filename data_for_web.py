@@ -9,8 +9,8 @@ conn = psycopg2.connect(
 
 # UPDATE CURRENT MONTH AND FED DATE the rest should be good
 
-currentmonth = "'" + '2022-01-01' + "'"
-feddate = "'" + '2022-03-02' + "'"
+currentmonth = "'" + '2022-02-01' + "'"
+feddate = "'" + '2022-03-30' + "'"
 
 # connecting to database
 # probably don't need to
