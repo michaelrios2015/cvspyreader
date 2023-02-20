@@ -4,7 +4,7 @@ import csv
 # but inserting it might be a bit trickier.. that will be seen in laoding scripts section
 
 
-file = 'data\input\platcoll_202209.txt'
+file = 'data\input\platcoll_202301.txt'
 
 
 # Using readlines()
