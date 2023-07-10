@@ -12,7 +12,7 @@ conn = psycopg2.connect(
 
 
 # so this seems to work
-data_path = "data\input\CMOS_2023-05-01.csv"
+data_path = "data\input\CMOS_2023-06-01.csv"
 
 date = data_path[-14:-4]
 
@@ -69,9 +69,57 @@ sql = """
 INSERT INTO ofincmos(cmo, cusip, faceincmo, date)
 SELECT cmo, cusip, faceincmo, date
 FROM cmostemp;
- 
+
 DROP TABLE cmostemp;
 """
+
+cursor.execute(sql)
+
+# we have some duplicate cmos that need to be combined
+sql = (
+    """
+SELECT cmo, cusip, date, sum(faceincmo) AS ofincmo
+INTO TEMP TABLE tempuniqueofincmos
+FROM ofincmos
+GROUP BY cmo, cusip, date;
+
+
+--puts my temp table into a real table
+INSERT INTO uniqueofincmos (cmo, cusip, date, faceincmo)
+SELECT cmo, cusip, date, ofincmo
+FROM tempuniqueofincmos
+WHERE tempuniqueofincmos.date = """
+    + "'"
+    + date
+    + "'"
+    + """;
+
+DROP TABLE tempuniqueofincmos;
+
+"""
+)
+
+cursor.execute(sql)
+
+# just puting the cmos into the cmo table we will show
+sql = (
+    """
+INSERT INTO cmos (cmo, date)
+SELECT DISTINCT cmo, TO_DATE("""
+    + "'"
+    + date
+    + "'"
+    + """,'YYYY-MM-DD')
+FROM uniqueofincmos
+WHERE uniqueofincmos.collapsed is null
+AND uniqueofincmos.date <= """
+    + "'"
+    + date
+    + "'"
+    + """;
+
+"""
+)
 
 cursor.execute(sql)
 

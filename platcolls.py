@@ -1,5 +1,8 @@
 import csv
 import psycopg2
+from zipfile import ZipFile
+import io
+import requests
 
 # connects to database
 conn = psycopg2.connect(
@@ -14,9 +17,25 @@ conn = psycopg2.connect(
 # but inserting it might be a bit trickier.. that will be seen in laoding scripts section
 
 
-file = "data\input\platcoll_202304.txt"
+# change these two monthly
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platcoll_202305.zip"
 
+file = "data\input\platcoll_202305.txt"
 
+############################################################################
+
+# this gets the data and saves it
+r = requests.get(data_url)  # create HTTP response object
+
+# print(r.content)
+# extract file
+z = ZipFile(io.BytesIO(r.content))
+# send it to data
+z.extractall("data\input")
+
+# z.extractall()
+
+# this extraxts what we needs
 # Using readlines()
 file1 = open(file, "r")
 Lines = file1.readlines()

@@ -1,5 +1,9 @@
 import csv
 import psycopg2
+from zipfile import ZipFile
+import io
+import requests
+
 
 # connects to database
 conn = psycopg2.connect(
@@ -10,9 +14,23 @@ conn = psycopg2.connect(
     port="5432",
 )
 
-# change this monthly
-data_path = "data\input\platmonPPS_202304.txt"
+# change these two monthly
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202305.zip"
 
+
+data_path = "data\input\platmonPPS_202305.txt"
+
+#########################################################
+
+r = requests.get(data_url)  # create HTTP response object
+
+# print(r.content)
+# extract file
+z = ZipFile(io.BytesIO(r.content))
+# send it to data
+z.extractall("data\input")
+
+# the rest is the same
 date = data_path[-10:-6] + "-" + data_path[-6:-4] + "-01"
 
 # reads in ginnie files take what i need and orders it
@@ -105,6 +123,20 @@ with open("data/output/platinumbodies.cvs", "w", newline="") as csvfile:
 # probably don't need to
 conn.autocommit = True
 cursor = conn.cursor()
+
+# should be fine
+# "'" + '2022-03-30' + "'"
+sql = (
+    """
+DELETE FROM platinumbodies
+WHERE date = """
+    + "'"
+    + date
+    + "'"
+    + """;
+"""
+)
+cursor.execute(sql)
 
 csv_file_name = "data\output\platinumbodies.cvs"
 sql = "COPY platinumbodies FROM STDIN DELIMITER ',' CSV HEADER"
