@@ -11,7 +11,7 @@ conn = psycopg2.connect(
 )
 
 # change this weekly
-data_path = "data/input/fedHoldings2023-06-28.csv"
+data_path = "data/input/fedHoldings2023-07-05.csv"
 
 with open(data_path, newline="") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=",")
@@ -50,6 +50,31 @@ cursor = conn.cursor()
 csv_file_name = "data/output/fed.cvs"
 sql = "COPY fedholdings FROM STDIN DELIMITER ',' CSV HEADER"
 cursor.copy_expert(sql, open(csv_file_name, "r"))
+
+
+sql = """
+SELECT * FROM fedholdings order by asofdate desc limit 5;
+"""
+cursor.execute(sql)
+records = cursor.fetchall()
+
+for row in records:
+    for column in row:
+        print(column, end=", ")
+    print()
+
+
+sql = (
+    """
+SELECT COUNT(*) FROM fedholdings where asofdate =  """
+    + date
+    + """ ;
+"""
+)
+cursor.execute(sql)
+records = cursor.fetchall()
+
+print("\ncount = ", records[0][0])
 
 
 conn.commit()

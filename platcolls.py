@@ -18,9 +18,9 @@ conn = psycopg2.connect(
 
 
 # change these two monthly
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platcoll_202305.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platcoll_202306.zip"
 
-file = "data\input\platcoll_202305.txt"
+file = "data\input\platcoll_202306.txt"
 
 ############################################################################
 
@@ -118,6 +118,29 @@ DROP table platcollstemp;
 """
 
 cursor.execute(sql)
+
+sql = """
+SELECT * FROM platcolls where terminated in not null order by terminated desc limit 5;
+"""
+cursor.execute(sql)
+records = cursor.fetchall()
+
+for row in records:
+    for column in row:
+        print(column, end=", ")
+    print()
+
+
+sql = """
+SELECT * FROM platcolls where born in not null order by born desc limit 5;
+"""
+cursor.execute(sql)
+records = cursor.fetchall()
+
+for row in records:
+    for column in row:
+        print(column, end=", ")
+    print()
 
 
 conn.commit()

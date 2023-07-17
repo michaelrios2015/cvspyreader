@@ -17,12 +17,12 @@ conn = psycopg2.connect(
 # change this monthly #######################################################
 
 # this one for the monthly one
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202305.zip"
+# data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202306.zip"
 
 # this for the daily
-# data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/dailySFPS.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/dailySFPS.zip"
 
-data_path = "data/input/monthlySFPS_202305.txt"
+data_path = "data/input/monthlySFPS_202307.txt"
 
 
 r = requests.get(data_url)  # create HTTP response object
@@ -33,7 +33,7 @@ zipinfos = z.infolist()
 
 
 # so for the dailys i need to rename it  #################################################
-# zipinfos[0].filename = "monthlySFPS_202305.txt"
+zipinfos[0].filename = "monthlySFPS_202307.txt"
 
 ###########################################################################
 z.extract(zipinfos[0], "data/input")
@@ -197,6 +197,33 @@ DROP TABLE poolstemp;
 """
 
 cursor.execute(sql)
+
+
+sql = """
+SELECT * FROM poolbodies order by date desc limit 5;
+"""
+cursor.execute(sql)
+records = cursor.fetchall()
+
+for row in records:
+    for column in row:
+        print(column, end=", ")
+    print()
+
+
+sql = (
+    """
+SELECT COUNT(*) FROM poolbodies where date =  """
+    + "'"
+    + date
+    + "'"
+    + """;
+"""
+)
+cursor.execute(sql)
+records = cursor.fetchall()
+
+print("\ncount = ", records[0][0])
 
 
 conn.commit()

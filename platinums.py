@@ -15,10 +15,10 @@ conn = psycopg2.connect(
 )
 
 # change these two monthly
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202305.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202306.zip"
 
 
-data_path = "data\input\platmonPPS_202305.txt"
+data_path = "data\input\platmonPPS_202306.txt"
 
 #########################################################
 
@@ -166,6 +166,32 @@ DROP TABLE platinumstemp;
 """
 
 cursor.execute(sql)
+
+sql = """
+SELECT * FROM platinumbodies order by date desc limit 5;
+"""
+cursor.execute(sql)
+records = cursor.fetchall()
+
+for row in records:
+    for column in row:
+        print(column, end=", ")
+    print()
+
+
+sql = (
+    """
+SELECT COUNT(*) FROM platinumbodies where date =  """
+    + "'"
+    + date
+    + "'"
+    + """;
+"""
+)
+cursor.execute(sql)
+records = cursor.fetchall()
+
+print("\ncount = ", records[0][0])
 
 
 conn.commit()
