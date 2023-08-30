@@ -15,10 +15,10 @@ conn = psycopg2.connect(
 )
 
 # change these two monthly
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202306.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202307.zip"
 
 
-data_path = "data\input\platmonPPS_202306.txt"
+data_path = "data\input\platmonPPS_202307.txt"
 
 #########################################################
 

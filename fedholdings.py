@@ -1,5 +1,8 @@
 import csv
 import psycopg2
+from zipfile import ZipFile
+import io
+import requests
 
 # connects to database
 conn = psycopg2.connect(
@@ -10,8 +13,27 @@ conn = psycopg2.connect(
     port="5432",
 )
 
+# should be what I need
+
+
 # change this weekly
-data_path = "data/input/fedHoldings2023-07-05.csv"
+
+date = "2023-08-09"
+
+data_url = (
+    "https://markets.newyorkfed.org/api/soma/agency/get/mbs/asof/" + date + ".csv"
+)
+
+data_path = "data/input/fedHoldings" + date + ".csv"
+
+
+r = requests.get(data_url)  # create HTTP response object
+
+with open("data/input/fedHoldings" + date + ".csv", "w") as f:
+    f.write(r.text)
+
+###########################################################################
+
 
 with open(data_path, newline="") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=",")
@@ -67,8 +89,10 @@ for row in records:
 sql = (
     """
 SELECT COUNT(*) FROM fedholdings where asofdate =  """
+    + "'"
     + date
-    + """ ;
+    + "'"
+    + """;
 """
 )
 cursor.execute(sql)

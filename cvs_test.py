@@ -1,32 +1,56 @@
-# so this can work
+# this seems to work fine, though if i just keep here i can double check it each time
+# Still seems to work fine-- 8/30, should inch it up towards the cmos.py just need to make sure david never
+# he changes these
 
-import requests
-import pandas as pd
-from zipfile import ZipFile
-import io
+with open("C:/Users/micha/Downloads/AlltheCMOse (15).txt", "r") as t1, open(
+    "C:/Users/micha/Downloads/AlltheCMOse (14).txt", "r"
+) as t2:
+    fileone = t1.readlines()
+    filetwo = t2.readlines()
 
 
-data_url_1 = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/nimonSFPS_202306.zip"
+print("done")
+print(len(filetwo))
+print(len(fileone))
 
-r = requests.get(data_url_1)  # create HTTP response object
+x = 0
+with open("input/CMOS_2023-08-01.csv", "w") as outFile:
+    for line in fileone:
+        x = x + 1
+        # print(x)
+        if x > len(filetwo):
+            outFile.write(line)
 
-# print(r.content)
-# extract file
-z = ZipFile(io.BytesIO(r.content))
-# send it to data
-# z.extractall("data\input")
-z.extractall()
 
-data_url_2 = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202305.zip"
+# # so this can work
 
-r = requests.get(data_url_2)  # create HTTP response object
+# import requests
+# import pandas as pd
+# from zipfile import ZipFile
+# import io
 
-# print(r.content)
-# extract file
-z = ZipFile(io.BytesIO(r.content))
-# send it to data
-# z.extractall("data\input")
-z.extractall()
+
+# data_url_1 = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/nimonSFPS_202306.zip"
+
+# r = requests.get(data_url_1)  # create HTTP response object
+
+# # print(r.content)
+# # extract file
+# z = ZipFile(io.BytesIO(r.content))
+# # send it to data
+# # z.extractall("data\input")
+# z.extractall()
+
+# data_url_2 = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202305.zip"
+
+# r = requests.get(data_url_2)  # create HTTP response object
+
+# # print(r.content)
+# # extract file
+# z = ZipFile(io.BytesIO(r.content))
+# # send it to data
+# # z.extractall("data\input")
+# z.extractall()
 
 
 # data = pd.read_csv(

@@ -12,7 +12,7 @@ conn = psycopg2.connect(
 
 
 # so this seems to work
-data_path = "data\input\CMOS_2023-06-01.csv"
+data_path = "data\input\CMOS_2023-08-01.csv"
 
 date = data_path[-14:-4]
 
