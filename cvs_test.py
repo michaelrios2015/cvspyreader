@@ -2,8 +2,8 @@
 # Still seems to work fine-- 8/30, should inch it up towards the cmos.py just need to make sure david never
 # he changes these
 
-with open("C:/Users/micha/Downloads/AlltheCMOse (15).txt", "r") as t1, open(
-    "C:/Users/micha/Downloads/AlltheCMOse (14).txt", "r"
+with open("C:/Users/micha/Downloads/AlltheCMOse (10).txt", "r") as t1, open(
+    "C:/Users/micha/Downloads/AlltheCMOse (9).txt", "r"
 ) as t2:
     fileone = t1.readlines()
     filetwo = t2.readlines()
@@ -14,7 +14,7 @@ print(len(filetwo))
 print(len(fileone))
 
 x = 0
-with open("input/CMOS_2023-08-01.csv", "w") as outFile:
+with open("data/input/CMOS_2024-09-01.csv", "w") as outFile:
     for line in fileone:
         x = x + 1
         # print(x)

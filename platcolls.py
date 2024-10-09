@@ -18,22 +18,22 @@ conn = psycopg2.connect(
 
 
 # change these two monthly
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platcoll_202307.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platcoll_202408.zip"
 
-file = "data\input\platcoll_202307.txt"
+file = "data\input\platcoll_202408.txt"
 
 ############################################################################
 
-# this gets the data and saves it
-r = requests.get(data_url)  # create HTTP response object
+# # this gets the data and saves it
+# r = requests.get(data_url)  # create HTTP response object
 
-# print(r.content)
-# extract file
-z = ZipFile(io.BytesIO(r.content))
-# send it to data
-z.extractall("data\input")
+# # print(r.content)
+# # extract file
+# z = ZipFile(io.BytesIO(r.content))
+# # send it to data
+# z.extractall("data\input")
 
-# z.extractall()
+# # z.extractall()
 
 # this extraxts what we needs
 # Using readlines()
@@ -48,6 +48,7 @@ date = file[-10:-6] + "-" + file[-6:-4] + "-01"
 # print(date)
 
 i = 0
+
 
 for row in Lines:
     # print(row)

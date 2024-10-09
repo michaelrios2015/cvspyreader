@@ -1,8 +1,8 @@
 import csv
-import psycopg2
 from zipfile import ZipFile
 import io
 import requests
+import psycopg2
 
 # connects to database
 conn = psycopg2.connect(
@@ -18,7 +18,7 @@ conn = psycopg2.connect(
 
 # change this weekly
 
-date = "2023-08-09"
+date = "2024-10-02"
 
 data_url = (
     "https://markets.newyorkfed.org/api/soma/agency/get/mbs/asof/" + date + ".csv"

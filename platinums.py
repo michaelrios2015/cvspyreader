@@ -3,6 +3,7 @@ import psycopg2
 from zipfile import ZipFile
 import io
 import requests
+import os
 
 
 # connects to database
@@ -15,22 +16,35 @@ conn = psycopg2.connect(
 )
 
 # change these two monthly
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202307.zip"
+data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/platmonPPS_202408.zip"
 
 
-data_path = "data\input\platmonPPS_202307.txt"
+data_path = "data\input\platmonPPS_202408.txt"
 
 #########################################################
 
-r = requests.get(data_url)  # create HTTP response object
+# r = requests.get(url=data_url)  # create HTTP response object
 
-# print(r.content)
-# extract file
-z = ZipFile(io.BytesIO(r.content))
-# send it to data
-z.extractall("data\input")
+# print(r.headers)
 
-# the rest is the same
+
+# print(r)
+# # extract file
+# z = ZipFile(io.BytesIO(r.content))
+# # send it to data
+# z.extractall("data\input")
+
+
+# file_name, file_extension = os.path.splitext(r.content)
+
+# print(file_name)
+# print(file_extension)
+
+
+# with ZipFile(io.BytesIO(r.content)) as z:
+#     z.extractall("data\input")
+
+# # the rest is the same
 date = data_path[-10:-6] + "-" + data_path[-6:-4] + "-01"
 
 # reads in ginnie files take what i need and orders it
@@ -107,6 +121,7 @@ bodyFields = [
     "cprnext",
     "cdrnext",
 ]
+
 
 with open("data/output/platinumbodies.cvs", "w", newline="") as csvfile:
     # creating a csv writer object

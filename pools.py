@@ -17,26 +17,26 @@ conn = psycopg2.connect(
 # change this monthly #######################################################
 
 # this one for the monthly one
-# data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202307.zip"
+# data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/monthlySFPS_202408.zip"
 
 # this for the daily
-data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/dailySFPS.zip"
+# data_url = "https://bulk.ginniemae.gov/protectedfiledownload.aspx?dlfile=data_bulk/dailySFPS.zip"
 
-data_path = "data/input/monthlySFPS_202308.txt"
-
-
-r = requests.get(data_url)  # create HTTP response object
-
-z = ZipFile(io.BytesIO(r.content))
-
-zipinfos = z.infolist()
+data_path = "data/input/monthlySFPS_202410.txt"
 
 
-# so for the dailys i need to rename it  #################################################
-zipinfos[0].filename = "monthlySFPS_202308.txt"
+# r = requests.get(data_url)  # create HTTP response object
 
-###########################################################################
-z.extract(zipinfos[0], "data/input")
+# z = ZipFile(io.BytesIO(r.content))
+
+# zipinfos = z.infolist()
+
+
+# # so for the dailys i need to rename it  #################################################
+# zipinfos[0].filename = "monthlySFPS_202310.txt"
+
+# ###########################################################################
+# z.extract(zipinfos[0], "data/input")
 
 
 date = data_path[-10:-6] + "-" + data_path[-6:-4] + "-01"
